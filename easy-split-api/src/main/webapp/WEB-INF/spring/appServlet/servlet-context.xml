@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:p="http://www.springframework.org/schema/p"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xmlns:beans="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
 
 	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
 	
@@ -24,5 +27,35 @@
 	<context:component-scan base-package="edu.usc.easysplit" />
 	
 	
+	<beans:bean id="jedisFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+		p:hostName="localhost" p:port="6379" />
+	
+	<beans:bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"
+		p:connection-factory-ref="jedisFactory">
+		<beans:property name="keySerializer">
+			<beans:bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+		</beans:property>
+		<beans:property name="hashKeySerializer">
+			<beans:bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+        </beans:property>
+	</beans:bean>
+
+	<beans:bean id="cacheService" class="edu.usc.easysplit.services.impl.CacheManagerImpl"
+		p:_cacheTemplate-ref="redisTemplate"/>
+	
+	
+	<beans:bean name="handlerAdapter" class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<beans:property name="messageConverters">
+			<beans:list>
+				<beans:bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter" />
+				<beans:ref bean="jsonConverter" />
+			</beans:list>
+		</beans:property>
+		<beans:property name="requireSession" value="false" />
+	</beans:bean>
+	
+	<beans:bean id="jsonConverter" class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
+		<beans:property name="supportedMediaTypes" value="application/json" />
+	</beans:bean>
 	
 </beans:beans>
