@@ -26,13 +26,13 @@ public class EasySplitContoroller {
 	@Autowired
 	private IGroupService groupService;
 	
-	@RequestMapping(value = "/login", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/login", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public LoginResponse login (@RequestBody LoginRequest request, HttpServletResponse httpResponse) {
 		return this.loginService.loginUser(request);
 	}
 	
-	@RequestMapping(value = "/createGroup", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/createGroup", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public GroupResponse createGroup (@RequestBody GroupRequest request, HttpServletResponse httpResponse) {
 		return this.groupService.createGroup(request);
